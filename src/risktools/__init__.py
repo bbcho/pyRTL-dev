@@ -2340,6 +2340,7 @@ def get_eia_df(tables, key):
         url = r"http://api.eia.gov/series/?api_key={}&series_id={}&out=json".format(
             key, tbl
         )
+
         tmp = json.loads(requests.get(url).text)
 
         tf = pd.DataFrame(tmp["series"][0]["data"], columns=["date", "value"])
@@ -2560,6 +2561,9 @@ def chart_forward_curves(
             type="date",
         )
     )
+
+    if kwargs is not None:
+        fig.update_layout(**kwargs)
 
     return fig
 
@@ -3167,6 +3171,94 @@ def _check_df(df):
     #     df = df.reset_index().copy()
 
     return df.copy()
+
+
+def plot_ols_diag(fit, **kwargs):
+    """
+    Function used to plot OLS regression diagnostic plots for statsmodels linear regression
+    models
+
+    Parameters
+    ----------
+    fit : statsmodels RegressionResults
+        Resultant fit object from statsmodels linear regression fit
+    **kwargs
+        parameters to pass to plotting functions (matplotlib). Not working yet.
+
+    Returns
+    -------
+    matplotlib figure object
+
+    Examples
+    --------
+    >>> import risktools as rt
+    >>> import pandas_datareader.data as web
+    >>> import statsmodels.formula.api as smf
+    >>> df = web.DataReader(['XLE','XOM'], data_source='yahoo', start='2007-01-01')
+    >>> df = df.stack(level=1).swaplevel().sort_index().reset_index()
+    >>> df['ret_log'] = df.groupby('Symbols')['Adj Close'].apply(lambda x: np.log(x/x.shift()))
+    >>> df = df.dropna()
+    >>> df_ret = df.set_index(['Symbols','Date']).unstack(level=0)['ret_log']
+    >>> fit = smf.ols('XLE ~ XOM', data=df_ret.reset_index()).fit()
+    >>> rt.plot_ols_diag(fit)
+    """
+    fig, ax = plt.subplots(2, 2)
+    fig.set_size_inches(10, 7)
+    fig.suptitle("OLS Regression Diagnostic Plots")
+
+    # Residuals vs Fitted
+    sns.regplot(
+        x=fit.fittedvalues,
+        y=fit.resid,
+        ax=ax[0, 0],
+        lowess=True,
+        line_kws={"color": "red"},
+    )
+    ax[0, 0].set_title("Residuals vs Fitted")
+    ax[0, 0].axhline(0, color="k", linestyle="--", lw="0.5")
+    ax[0, 0].set_xlabel("Fitted Values")
+    ax[0, 0].set_ylabel("Residuals")
+
+    # Normal Q-Q Plot
+    sm.qqplot(
+        fit.resid,
+        line="s",
+        ax=ax[0, 1],
+        markerfacecolor=sns.color_palette()[0],
+        markeredgecolor=sns.color_palette()[0],
+        alpha=0.8,
+    )
+    ax[0, 1].set_title("Normal Q-Q")
+
+    # Std Residuals vs Fitted
+    sns.regplot(
+        x=fit.fittedvalues,
+        y=np.sqrt(np.abs(fit.resid / fit.resid.std())),
+        ax=ax[1, 0],
+        lowess=True,
+        line_kws={"color": "red"},
+    )
+    ax[1, 0].set_title("Scale-Location")
+    ax[1, 0].set_xlabel("Fitted Values")
+    ax[1, 0].set_ylabel(r"$\sqrt{|\enspace standardized \enspace residuals \enspace|}$")
+
+    # Residuals vs Leverage
+    infl = fit.get_influence()
+    sf = infl.summary_frame()
+    sns.regplot(
+        x=sf.hat_diag,
+        y=sf.standard_resid,
+        ax=ax[1, 1],
+        lowess=True,
+        line_kws={"color": "red"},
+    )
+    ax[1, 1].axhline(0, color="k", linestyle="--", lw="0.5")
+    ax[1, 1].set_xlabel("Leverage (hat_diag)")
+    ax[1, 1].set_ylabel("Standardized Residuals")
+    ax[1, 1].set_title("Residuals vs Leverage")
+    fig.tight_layout()
+
+    return fig
 
 
 # if __name__ == "__main__":

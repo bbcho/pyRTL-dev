@@ -5,6 +5,9 @@ import os
 import json
 import sys
 import plotly.graph_objects as go
+import pandas_datareader.data as web
+import statsmodels.formula.api as smf
+import matplotlib.pyplot as plt
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src/")
 
@@ -432,6 +435,19 @@ def test_swap_com():
     ts.index.name = "date"
 
     assert ac.equals(ts.round(4)), "swap_com Test failed"
+
+
+def test_plot_ols_diag():
+    df = web.DataReader(["XLE", "XOM"], data_source="yahoo", start="2007-01-01")
+    df = df.stack(level=1).swaplevel().sort_index().reset_index()
+    df["ret_log"] = df.groupby("Symbols")["Adj Close"].apply(
+        lambda x: np.log(x / x.shift())
+    )
+    df = df.dropna()
+    df_ret = df.set_index(["Symbols", "Date"]).unstack(level=0)["ret_log"]
+    fit = smf.ols("XLE ~ XOM", data=df_ret.reset_index()).fit()
+    fig = rt.plot_ols_diag(fit)
+    assert isinstance(fig, plt.Figure), "plot_ols_diag Test failed"
 
 
 if __name__ == "__main__":
