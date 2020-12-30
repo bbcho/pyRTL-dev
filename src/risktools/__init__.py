@@ -3201,7 +3201,7 @@ def chart_ols_diag(fit, **kwargs):
     >>> df = df.dropna()
     >>> df_ret = df.set_index(['Symbols','Date']).unstack(level=0)['ret_log']
     >>> fit = smf.ols('XLE ~ XOM', data=df_ret.reset_index()).fit()
-    >>> rt.plot_ols_diag(fit)
+    >>> rt.chart_ols_diag(fit)
     """
     fig, ax = plt.subplots(2, 2)
     fig.set_size_inches(10, 7)
