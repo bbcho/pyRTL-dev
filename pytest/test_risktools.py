@@ -437,7 +437,7 @@ def test_swap_com():
     assert ac.equals(ts.round(4)), "swap_com Test failed"
 
 
-def test_plot_ols_diag():
+def test_chart_ols_diag():
     df = web.DataReader(["XLE", "XOM"], data_source="yahoo", start="2007-01-01")
     df = df.stack(level=1).swaplevel().sort_index().reset_index()
     df["ret_log"] = df.groupby("Symbols")["Adj Close"].apply(
@@ -446,7 +446,7 @@ def test_plot_ols_diag():
     df = df.dropna()
     df_ret = df.set_index(["Symbols", "Date"]).unstack(level=0)["ret_log"]
     fit = smf.ols("XLE ~ XOM", data=df_ret.reset_index()).fit()
-    fig = rt.plot_ols_diag(fit)
+    fig = rt.chart_ols_diag(fit)
     assert isinstance(fig, plt.Figure), "plot_ols_diag Test failed"
 
 

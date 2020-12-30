@@ -3173,10 +3173,11 @@ def _check_df(df):
     return df.copy()
 
 
-def plot_ols_diag(fit, **kwargs):
+def chart_ols_diag(fit, **kwargs):
     """
-    Function used to plot OLS regression diagnostic plots for statsmodels linear regression
-    models
+    Function used to chart OLS regression diagnostic plots for statsmodels linear regression
+    models. Based on R's regression diagnostic plots using the base function plot() or autoplot()
+    from the ggfortify package.
 
     Parameters
     ----------
