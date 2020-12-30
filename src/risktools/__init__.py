@@ -3179,6 +3179,59 @@ def chart_ols_diag(fit, **kwargs):
     models. Based on R's regression diagnostic plots using the base function plot() or autoplot()
     from the ggfortify package.
 
+    The diagnostic plots show residuals in four different ways:
+
+    1. Residuals vs Fitted. Used to check the linear relationship assumptions. A horizontal line,
+    without distinct patterns is an indication for a linear relationship, what is good.
+
+    2. Normal Q-Q. Used to examine whether the residuals are normally distributed. It’s good if
+    residuals points follow the straight dashed line.
+
+    3. Scale-Location (or Spread-Location). Used to check the homogeneity of variance of the
+    residuals (homoscedasticity). Horizontal line with equally spread points is a good indication of
+    homoscedasticity. Any degree of slope indicates a heteroscedasticity problem. A possible
+    solution to reduce the heteroscedasticity problem is to use a log or square root transformation
+    of the outcome variable (y).
+
+    4. Residuals vs Leverage. Used to identify influential cases, that is extreme values that
+    might influence the regression results when included or excluded from the analysis.
+
+        Outliers:
+        An outlier is a point that has an extreme outcome variable value. The presence of outliers
+        may affect the interpretation of the model, because it increases the RSE.
+
+        Outliers can be identified by examining the standardized residual (or studentized residual),
+        which is the residual divided by its estimated standard error. Standardized residuals can
+        be interpreted as the number of standard errors away from the regression line.
+
+        Observations whose standardized residuals are greater than 3 in absolute value are possible
+        outliers (James et al. 2014).
+
+        High leverage points:
+
+        A data point has high leverage, if it has extreme predictor x values. This can be detected
+        by examining the leverage statistic or the hat-value. A value of this statistic above 2(p + 1)/n
+        indicates an observation with high leverage (P. Bruce and Bruce 2017); where, p is the number
+        of predictors and n is the number of observations. Outliers and high leverage points can be
+        identified by inspecting the Residuals vs Leverage plot
+
+        Influential values
+
+        An influential value is a value, which inclusion or exclusion can alter the results of the
+        regression analysis. Such a value is associated with a large residual.
+
+        Not all outliers (or extreme data points) are influential in linear regression analysis.
+
+        Statisticians have developed a metric called Cook’s distance to determine the influence of a
+        value. This metric defines influence as a combination of leverage and residual size.
+
+        A rule of thumb is that an observation has high influence if Cook’s distance exceeds 4/(n - p - 1)
+        (P. Bruce and Bruce 2017), where n is the number of observations and p the number of predictor variables.
+
+        The Residuals vs Leverage plot can help us to find influential observations if any. On this plot,
+        outlying values are generally located at the upper right corner or at the lower right corner.
+        Those spots are the places where data points can be influential against a regression line.
+
     Parameters
     ----------
     fit : statsmodels RegressionResults
@@ -3189,6 +3242,10 @@ def chart_ols_diag(fit, **kwargs):
     Returns
     -------
     matplotlib figure object
+
+    Reference
+    ---------
+    http://www.sthda.com/english/articles/39-regression-model-diagnostics/161-linear-regression-assumptions-and-diagnostics-in-r-essentials/
 
     Examples
     --------
