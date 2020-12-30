@@ -3179,7 +3179,7 @@ def chart_ols_diag(fit, **kwargs):
     models. Based on R's regression diagnostic plots using the base function plot() or autoplot()
     from the ggfortify package.
 
-    The diagnostic plots show residuals in four different ways:
+    The diagnostic plots show residuals in four different ways [1]:
 
     1. Residuals vs Fitted. Used to check the linear relationship assumptions. A horizontal line,
     without distinct patterns is an indication for a linear relationship, what is good.
@@ -3245,7 +3245,7 @@ def chart_ols_diag(fit, **kwargs):
 
     Reference
     ---------
-    http://www.sthda.com/english/articles/39-regression-model-diagnostics/161-linear-regression-assumptions-and-diagnostics-in-r-essentials/
+    [1] http://www.sthda.com/english/articles/39-regression-model-diagnostics/161-linear-regression-assumptions-and-diagnostics-in-r-essentials/
 
     Examples
     --------
